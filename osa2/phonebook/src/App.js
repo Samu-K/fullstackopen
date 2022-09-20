@@ -51,7 +51,7 @@ const App = () => {
     setNewNumber("")
   }
 
-  const personsToShow = persons.filter(person => person.name.includes(currentFilter))
+  const personsToShow = persons.filter(person => person.name.includes(currentFilter.toLowerCase()))
   return (
     <div>
       <h2>phonebook</h2>
