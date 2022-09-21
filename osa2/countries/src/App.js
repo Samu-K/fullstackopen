@@ -14,10 +14,20 @@ const ShowList = ({countries,currentFilter}) => {
       </div>
     )
   } else if (countriesToShow.length===1) {
+    const api_key = process.env.REACT_APP_API_KEY
     const country = countriesToShow[0]
     const languages = Object.values(country.languages)
 
-    console.log(country)
+    const weather_url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${country.name.common}?unitGroup=metric&key=${api_key}&contentType=json`
+
+    const weather = fetch(weather_url, {
+      "method": "GET",
+      "headers": {
+      }
+    })
+    .then(response => response.json())
+    .then(data => {return data})
+
     return (
       <div>
         <h1>{country.name.common}</h1>
@@ -29,11 +39,13 @@ const ShowList = ({countries,currentFilter}) => {
             {languages.map(language => <li>{language}</li>)}
         </ul>
         <div>
-          <img src={country.flags.png}/>
+          <img src={country.flags.png} alt="country flag"/>
         </div>
+
+        <h2>Weather in {country.capital}</h2>
+
       </div>
     )
-
   } else {
     return(
       <div>
