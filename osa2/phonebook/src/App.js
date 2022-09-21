@@ -1,4 +1,5 @@
-import {useState} from "react";
+import {useState,useEffect} from "react";
+import axios from "axios"
 
 const AddPerson = ({newName,newNumber,addName,handleNameChange,handleNumberChange}) => {
   return (
@@ -22,7 +23,7 @@ const AddPerson = ({newName,newNumber,addName,handleNameChange,handleNumberChang
 }
 
 const ShowBook = ({persons,currentFilter}) => {
-  const personsToShow = persons.filter(person => person.name.includes(currentFilter.toLowerCase()))
+  const personsToShow = persons.filter(person => person.name.toLowerCase().includes(currentFilter.toLowerCase()))
 
   return (
   <div>
@@ -48,18 +49,14 @@ function NewPerson(name,number,len) {
 }
 
 const App = () => {
-  const [persons, setPersons] = useState(
-    [
-    {name: "Arto Hellas",
-    number: "040-1231244",
-    id: 1
-    },
-    {name: "Tester2",
-    number: "044-1222221244",
-    id: 2
-    },
 
-])
+  const [persons, setPersons] = useState([])
+
+  useEffect(() => {
+    axios
+    .get("http://localhost:3001/persons")
+    .then(response => setPersons(response.data))
+  },[])
 
   const [newName,setNewName] = useState("")
   const [newNumber, setNewNumber] = useState("")
