@@ -1,5 +1,5 @@
+import axios from "axios";
 import {useState,useEffect} from "react";
-import axios from "axios"
 import service from "./services/persons"
 
 const AddPerson = ({newName,newNumber,addName,handleNameChange,handleNumberChange}) => {
@@ -23,14 +23,16 @@ const AddPerson = ({newName,newNumber,addName,handleNameChange,handleNumberChang
   )
 }
 
-const ShowBook = ({persons,currentFilter}) => {
+const ShowBook = ({persons,currentFilter,handleDelete}) => {
   const personsToShow = persons.filter(person => person.name.toLowerCase().includes(currentFilter.toLowerCase()))
 
   return (
   <div>
     <h2>numbers</h2>
     <ul>
-      {personsToShow.map(person => <li key={person.id}>{person.name} {person.number}</li>)}
+      {personsToShow.map(person => <li key={person.id}>
+        {person.name} {person.number} <button value={person.id} onClick={handleDelete}>Delete</button>
+      </li>)}
     </ul>
   </div>
   )
@@ -55,7 +57,8 @@ const App = () => {
 
   useEffect(() => {
     service
-    .getCurrent(initpersons => {
+    .getCurrent()
+    .then(initpersons => {
       setPersons(initpersons)
     })
   },[])
@@ -76,12 +79,28 @@ const App = () => {
     setCurrentFilter(event.target.value)
   }
 
+  const handleDelete = (event) => {
+    const id = event.target.value
+    const cnf = window.confirm(`Delete ${persons[id]} ?`)
+
+    if (cnf) {
+      service
+      .delperson(id)
+
+      service
+      .getCurrent()
+      .then(prs => {
+        setPersons(prs)
+      })
+    }
+  }
+
   const addName = (event) => {
     event.preventDefault()
     const match = persons.find(person => person.name === newName)
 
     if (match === undefined) {
-      const personObject = NewPerson(newName,newNumber,persons.length)
+      const personObject = NewPerson(newName,newNumber,persons.length+1)
       
       service
       .createNew(personObject)
@@ -92,10 +111,22 @@ const App = () => {
       })
         
     } else {
-      const msg = `${newName} is already added to phonebook`
-      alert(msg)
-    }
-  }
+      const rtn = window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)
+      if (rtn) {
+        const personObject = {...match, number: newNumber}
+        axios
+        .put(`http://localhost:3001/persons/${personObject.id}`,personObject)
+      
+        setNewName("")
+        setNewNumber("")
+
+        service
+        .getCurrent()
+        .then(prs => {
+          setPersons(prs)
+        })
+      }
+    }}
 
   return (
     <div>
@@ -116,6 +147,7 @@ const App = () => {
       <ShowBook
         persons={persons}
         currentFilter={currentFilter}
+        handleDelete={handleDelete}
       />
 
     </div>
