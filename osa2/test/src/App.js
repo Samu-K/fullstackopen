@@ -1,11 +1,18 @@
 import Note from './components/Note'
-import { useState } from 'react';
+import noteService from "./services/notes"
 
-const App = (props) => {
-  const [notes, setNotes] = useState(props.notes)
+import { useState } from 'react';
+import axios from "axios";
+
+const App = () => {
+
+  const [notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState()
   const [showAll, setShowAll] = useState(true)
 
+  axios
+  .get("http://localhost:3001/notes")
+  .then(response => setNotes(response.data))
 
   const addNote = (event) => {
     event.preventDefault()
@@ -16,17 +23,19 @@ const App = (props) => {
       id: notes.length +1,
     }
 
-    setNotes(notes.concat(noteObject))
-    setNewNote("input note")
+    axios
+      .post("http://localhost:3001/notes",noteObject)
+      .then(response => {
+        setNotes(notes.concat(response.data))
+        setNewNote("input note")
+      })
   }
 
   const handleNoteChange = (event) => {
-    console.log(event.target.value)
     setNewNote(event.target.value)
   }
 
   const notesToShow = showAll ? notes : notes.filter(note => note.important)
-
 
   return (
     <div>
