@@ -1,4 +1,4 @@
-const AddPerson = ({newName,newNumber,addName,handleNameChange,handleNumberChange,setErrorMsg}) => {
+const AddPerson = ({newName,newNumber,addName,handleNameChange,handleNumberChange}) => {
     return (
     <div>
       <h2>add a new</h2>

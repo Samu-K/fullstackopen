@@ -5,19 +5,10 @@ import AddPerson from "./components/addperson"
 import ShowBook from "./components/showbook"
 import NewPerson from "./components/newperson"
 import DisplayNotif from "./components/displaynotif"
+import fix_id from "./components/fix_id";
 
 const App = () => {
-
   const [persons, setPersons] = useState([])
-
-  useEffect(() => {
-    service
-    .getCurrent()
-    .then(initpersons => {
-      setPersons(initpersons)
-    })
-  },[])
-
   const [newName,setNewName] = useState("")
   const [newNumber, setNewNumber] = useState("")
   const [currentFilter, setCurrentFilter] = useState("")
@@ -35,18 +26,27 @@ const App = () => {
     setCurrentFilter(event.target.value)
   }
 
+  useEffect(() => {
+    service
+    .getCurrent()
+    .then(initpersons => {
+      setPersons(initpersons)
+    })
+  },[])
+
   const handleDelete = (event) => {
     const id = event.target.value
     const cnf = window.confirm(`Delete ${persons[id]} ?`)
 
     if (cnf) {
+
       service
       .delperson(id)
 
       service
       .getCurrent()
       .then(prs => {
-        setPersons(prs)
+        setPersons(fix_id(prs))
       })
     }
   }
@@ -56,7 +56,7 @@ const App = () => {
     const match = persons.find(person => person.name === newName)
 
     if (match === undefined) {
-      const personObject = NewPerson(newName,newNumber,persons.length+1)
+      const personObject = NewPerson(newName,newNumber,persons.length-1)
       
       service
       .createNew(personObject)

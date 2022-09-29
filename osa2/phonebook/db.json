@@ -3,32 +3,22 @@
     {
       "name": "Dan Abramov",
       "number": "12-43-234345",
-      "id": 3
+      "id": 0
     },
     {
-      "name": "test",
-      "number": "1254124",
+      "name": "Dan Example",
+      "number": "12-43-123",
+      "id": 1
+    },
+    {
+      "name": "Dan Tryinhg",
+      "number": "12-43-1524",
       "id": 2
     },
     {
-      "name": "smk",
-      "number": "896475",
-      "id": 4
-    },
-    {
-      "name": "test esf",
-      "number": "2314",
-      "id": 5
-    },
-    {
-      "name": "test äijä",
-      "number": "2141",
-      "id": 6
-    },
-    {
-      "name": "afsdfds",
-      "number": "421124",
-      "id": 8
+      "name": "Dan Arg",
+      "number": "12-43-2141",
+      "id": 3
     }
   ]
 }
