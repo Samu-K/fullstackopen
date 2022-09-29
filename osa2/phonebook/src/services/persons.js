@@ -13,8 +13,10 @@ const createNew = async (newObject) => {
     return response.data
 }
 
-const delperson = (id) => {
-    axios.delete(`${baseUrl}/${id}`)
+const delperson = async (id) => {
+    await axios.delete(`${baseUrl}/${id}`)
+    const update = await getCurrent()
+    return update
 }
 
 // eslint-disable-next-line

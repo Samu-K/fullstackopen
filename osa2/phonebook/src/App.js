@@ -5,7 +5,6 @@ import AddPerson from "./components/addperson"
 import ShowBook from "./components/showbook"
 import NewPerson from "./components/newperson"
 import DisplayNotif from "./components/displaynotif"
-import fix_id from "./components/fix_id";
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -34,20 +33,14 @@ const App = () => {
     })
   },[])
 
-  const handleDelete = (event) => {
+  const handleDelete = async (event) => {
     const id = event.target.value
     const cnf = window.confirm(`Delete ${persons[id]} ?`)
 
     if (cnf) {
-
       service
       .delperson(id)
-
-      service
-      .getCurrent()
-      .then(prs => {
-        setPersons(fix_id(prs))
-      })
+      .then(rtn => {setPersons(rtn)})
     }
   }
 
@@ -56,7 +49,9 @@ const App = () => {
     const match = persons.find(person => person.name === newName)
 
     if (match === undefined) {
-      const personObject = NewPerson(newName,newNumber,persons.length-1)
+      const max_id = Math.max(...persons.map(person=>person.id))
+
+      const personObject = NewPerson(newName,newNumber,max_id+1)
       
       service
       .createNew(personObject)
@@ -77,6 +72,11 @@ const App = () => {
         const personObject = {...match, number: newNumber}
         axios
         .put(`http://localhost:3001/persons/${personObject.id}`,personObject)
+        .catch((error) => {
+          if (error.response === 404) {
+            setErrorMsg(`Information of ${newName} has already been removed from server`)
+          }
+        })
       
         setNewName("")
         setNewNumber("")
