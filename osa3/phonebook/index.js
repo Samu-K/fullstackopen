@@ -1,8 +1,26 @@
+const addPerson = (id, rbody) => {
+    const person = {
+        name: rbody.name,
+        number: rbody.number,
+        id: id
+    }
+    
+    return person
+}
+
+
 const { response } = require("express")
 const express = require("express")
+const morgan = require("morgan")
+
 const app = express()
 
+morgan.token("body",req => {
+    return JSON.stringify(req.body)
+})
+
 app.use(express.json())
+app.use(morgan(":method :url :status :response-time :body"))
 
 let persons = [
       {
@@ -28,7 +46,7 @@ let persons = [
     ]
 
 app.get("/", (req,resp) => {
-    resp.send("<h1>Test</h1>")
+    resp.send("<h1>Front page</h1>")
 })
 
 app.get("/api/persons/",(req,resp) => {
@@ -54,13 +72,6 @@ app.get("/info",(req,resp) => {
 
 })
 
-app.delete("/api/persons/:id", (req,resp) => {
-    const id = Number(req.params.id)
-    persons = persons.filter(person => person.id !== id)
-
-    resp.status(204).end()
-})
-
 app.post("/api/persons", (req,resp) => {
     const rbody = req.body
 
@@ -74,19 +85,23 @@ app.post("/api/persons", (req,resp) => {
         })
     } else {
         const max_id = Math.max(...persons.map(person=>person.id))
-    
-        const person = {
-            name: rbody.name,
-            number: rbody.number,
-            id: max_id+1
-        }
-    
+
+        const person = addPerson(max_id+1, rbody)
+
         persons= persons.concat(person)
-        console.log(persons)
+
         resp.json(person)
     }
-    
 })
+
+app.delete("/api/persons/:id", (req,resp) => {
+    const id = Number(req.params.id)
+    persons = persons.filter(person => person.id !== id)
+
+    resp.status(204).end()
+})
+
+
 
 const PORT = 3001
 app.listen(PORT, ()=> {
