@@ -8,11 +8,12 @@ const addPerson = (id, rbody) => {
     return person
 }
 
-
-const { response } = require("express")
+require('dotenv').config()
 const express = require("express")
 const morgan = require("morgan")
 const cors = require("cors")
+
+const Person = require("./models/person")
 
 const app = express()
 
@@ -24,7 +25,6 @@ app.use(express.json())
 app.use(cors())
 app.use(morgan(":method :url :status :response-time :body"))
 app.use(express.static("build"))
-
 
 let persons = [
       {
@@ -54,7 +54,9 @@ app.get("/", (req,resp) => {
 })
 
 app.get("/api/persons/",(req,resp) => {
-    resp.json(persons)
+    Person.find({}).then( persons => {
+        resp.json(persons)
+    })
 })
 
 app.get("/api/persons/:id",(req,resp) => {
