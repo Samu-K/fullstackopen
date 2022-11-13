@@ -1,4 +1,4 @@
-require('dotenv').config()
+require("dotenv").config()
 
 const express = require("express")
 const morgan = require("morgan")
@@ -53,7 +53,7 @@ app.get("/api/persons/:id",(req,resp) => {
             resp.status(404).end()
         }}
     )
-    .catch(error => next(error))
+        .catch((error,next) => next(error))
 })
 
 app.get("/info",(req,resp) => {
@@ -65,8 +65,8 @@ app.get("/info",(req,resp) => {
 
 app.delete("/api/persons/:id", (req,resp) => {
     Person.findOneAndDelete({"id":req.params.id})
-    .then(result => resp.status(204).end())
-    .catch(error => next(error))
+        .then(resp.status(204).end())
+        .catch((error,next) => next(error))
 })
 
 const unknownEndpoint = (req,resp) => {
@@ -101,23 +101,23 @@ function isDuplicate(Person,pname) {
 
 function addPerson(Person, rbody,resp) {
     Person
-    .findOne({})
-    .sort('-id')
-    .exec((err,mem)=>{
+        .findOne({})
+        .sort("-id")
+        .exec((err,mem)=>{
         // add new person
-        const person = new Person({
-            name: rbody.name,
-            number: rbody.number,
-            id: mem.id+1,
-        })
+            const person = new Person({
+                name: rbody.name,
+                number: rbody.number,
+                id: mem.id+1,
+            })
         
-        person.save()
-        .then(savedPerson => {
-            resp.json(savedPerson)
-        })
-        .catch(error => next(error))
+            person.save()
+                .then(savedPerson => {
+                    resp.json(savedPerson)
+                })
+                .catch((error,next) => next(error))
         
-    })
+        })
 }
 
 const PORT = process.env.PORT || 3001

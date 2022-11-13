@@ -11,39 +11,39 @@ const url =
 mongoose.connect(url)
 
 const personSchema = new mongoose.Schema({
-		name: {
-			type: String,
-			minlength: 3,
-			required: true
-		},
-		number: {
-			type: String,
-			minlength: 8,
-			required: true
-		},
-		id: Number,
+    name: {
+        type: String,
+        minlength: 3,
+        required: true
+    },
+    number: {
+        type: String,
+        minlength: 8,
+        required: true
+    },
+    id: Number,
 })
 
 const Person = mongoose.model("Person",personSchema)
 
 if (!name) {
-		console.log("phonebook")
-		Person.find({}).then( result => {
-				result.forEach(note => {
-				console.log(`${note.name} ${note.number}`)
-				})
-		mongoose.connection.close()
-		})
+    console.log("phonebook")
+    Person.find({}).then( result => {
+        result.forEach(note => {
+            console.log(`${note.name} ${note.number}`)
+        })
+        mongoose.connection.close()
+    })
 } else {
-		const person = new Person({
-				name: name,
-				number: num,
-				id: Math.floor(Math.random() * 10000),
-		})
+    const person = new Person({
+        name: name,
+        number: num,
+        id: Math.floor(Math.random() * 10000),
+    })
 
-		person.save().then(result => {
-				console.log(`added ${name} number ${num} to phonebook`)
-				mongoose.connection.close()
-		})
+    person.save().then(() => {
+        console.log(`added ${name} number ${num} to phonebook`)
+        mongoose.connection.close()
+    })
 }
 
