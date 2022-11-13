@@ -35,7 +35,9 @@ const App = () => {
 
   const handleDelete = async (event) => {
     const id = event.target.value
-    const cnf = window.confirm(`Delete ${persons[id]} ?`)
+    // eslint-disable-next-line
+    const pname = persons.filter(person => person.id == id)
+    const cnf = window.confirm(`Delete ${pname[0].name} ?`)
 
     if (cnf) {
       service
@@ -49,9 +51,7 @@ const App = () => {
     const match = persons.find(person => person.name === newName)
 
     if (match === undefined) {
-      const max_id = Math.max(...persons.map(person=>person.id))
-
-      const personObject = NewPerson(newName,newNumber,max_id+1)
+      const personObject = NewPerson(newName,newNumber)
       
       service
       .createNew(personObject)
@@ -96,7 +96,7 @@ const App = () => {
     <div>
       <h3><DisplayNotif message={errorMsg}/></h3>
     
-      <h2>phonebook test</h2>
+      <h2>phonebook</h2>
       
       <form>
         filter shown with <input value={currentFilter} onChange={handleFilterChange}/>
