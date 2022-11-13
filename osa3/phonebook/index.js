@@ -17,7 +17,7 @@ app.use(express.json())
 app.use(cors())
 app.use(morgan(":method :url :status :response-time :body"))
 
-app.post("/api/persons", (req,resp) => {
+app.post("/api/persons", (req,resp, next) => {
     const rbody = req.body
 
     if (rbody.name==null || rbody.number==null) {
@@ -30,7 +30,7 @@ app.post("/api/persons", (req,resp) => {
             error: "name duplicate error"
         })
     } else {
-        addPerson(Person,rbody, resp)
+        addPerson(Person,rbody, resp, next)
     }
 })
 
@@ -45,7 +45,7 @@ app.get("/api/persons/",(req,resp) => {
     })
 })
 
-app.get("/api/persons/:id",(req,resp) => {
+app.get("/api/persons/:id",(req,resp, next) => {
     Person.findById(req.params.id).then(person => {
         if (person) {
             resp.json(person)
@@ -53,7 +53,7 @@ app.get("/api/persons/:id",(req,resp) => {
             resp.status(404).end()
         }}
     )
-        .catch((error,next) => next(error))
+        .catch(error => next(error))
 })
 
 app.get("/info",(req,resp) => {
@@ -63,10 +63,10 @@ app.get("/info",(req,resp) => {
     })
 })
 
-app.delete("/api/persons/:id", (req,resp) => {
+app.delete("/api/persons/:id", (req,resp,next) => {
     Person.findOneAndDelete({"id":req.params.id})
         .then(resp.status(204).end())
-        .catch((error,next) => next(error))
+        .catch(error => next(error))
 })
 
 const unknownEndpoint = (req,resp) => {
@@ -99,7 +99,7 @@ function isDuplicate(Person,pname) {
     return false
 }
 
-function addPerson(Person, rbody,resp) {
+function addPerson(Person, rbody, resp, next) {
     Person
         .findOne({})
         .sort("-id")
@@ -115,7 +115,7 @@ function addPerson(Person, rbody,resp) {
                 .then(savedPerson => {
                     resp.json(savedPerson)
                 })
-                .catch((error,next) => next(error))
+                .catch(error => next(error))
         
         })
 }
