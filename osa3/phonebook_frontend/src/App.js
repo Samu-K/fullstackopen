@@ -71,7 +71,10 @@ const App = () => {
       if (rtn) {
         const personObject = {...match, number: newNumber}
         axios
-        .put(`http://localhost:3001/api/persons/${personObject.id}`,personObject)
+        .delete(`api/persons/${personObject.id}`)
+        .then(resp => {
+          service.createNew(personObject)
+        })
         .catch((error) => {
           if (error.response === 404) {
             setErrorMsg(`Information of ${newName} has already been removed from server`)
@@ -93,7 +96,7 @@ const App = () => {
     <div>
       <h3><DisplayNotif message={errorMsg}/></h3>
     
-      <h2>phonebook</h2>
+      <h2>phonebook test</h2>
       
       <form>
         filter shown with <input value={currentFilter} onChange={handleFilterChange}/>

@@ -1,14 +1,5 @@
-const addPerson = (id, rbody) => {
-    const person = {
-        name: rbody.name,
-        number: rbody.number,
-        id: id
-    }
-    
-    return person
-}
-
 require('dotenv').config()
+
 const express = require("express")
 const morgan = require("morgan")
 const cors = require("cors")
@@ -26,30 +17,8 @@ app.use(cors())
 app.use(morgan(":method :url :status :response-time :body"))
 app.use(express.static("build"))
 
-let persons = [
-      {
-        "name": "Dan Abramov",
-        "number": "12-43-234345",
-        "id": 0
-      },
-      {
-        "name": "sdfgsdfg",
-        "number": "235325",
-        "id": 7
-      },
-      {
-        "name": "sdfgsdg",
-        "number": "235532",
-        "id": 9
-      },
-      {
-        "name": "dfsg ",
-        "number": "2131",
-        "id": 11
-      }
-    ]
-
 app.get("/", (req,resp) => {
+    // placeholder if frontend build fails
     resp.send("<h1>Front page</h1>")
 })
 
@@ -60,22 +29,16 @@ app.get("/api/persons/",(req,resp) => {
 })
 
 app.get("/api/persons/:id",(req,resp) => {
-    const id = Number(req.params.id)
-    const person = persons.find(person=>person.id === id)
-
-    if (person) {
+    Person.findById(req.params.id).then(person => {
         resp.json(person)
-    } else {
-        resp.status(404).end()
-    }
-    
+    })
 })
 
 app.get("/info",(req,resp) => {
     const date = new Date()
-    const pplnum = persons.length
-    resp.send(`<p>Phonebook has info for ${pplnum}</p> <p>${date}</p>`)
-
+    Person.count({},(err,pplnum)=> {
+        resp.send(`<p>Phonebook has info for ${pplnum}</p> <p>${date}</p>`)
+    })
 })
 
 app.post("/api/persons", (req,resp) => {
@@ -85,24 +48,43 @@ app.post("/api/persons", (req,resp) => {
         return resp.status(400).json({
             error: "content missing"
     })
-    } else if (persons.find(person => person.name === rbody.name)) {
+    } else if (Person.find({"name":rbody.name}).limit(1)) {
         return resp.status(400).json({
             error: "name must be unique"
         })
     } else {
-        const max_id = Math.max(...persons.map(person=>person.id))
+        // get max id
+        Person
+            .findOne({})
+            .sort('-id')
+            .exec((err,mem)=>{
+                const max_id = mem.id
 
-        const person = addPerson(max_id+1, rbody)
+                // if list empty
+                if (!mem) {
+                    max_id = 0
+                }
 
-        persons= persons.concat(person)
-
-        resp.json(person)
+                // add new person
+                const person = new Person({
+                    name: rbody.name,
+                    number: rbody.number,
+                    id: max_id+1,
+                })
+                
+                person.save().then(savedPerson => {
+                    resp.json(savedPerson)
+                })
+                
+            })
     }
 })
 
 app.delete("/api/persons/:id", (req,resp) => {
-    const id = Number(req.params.id)
-    persons = persons.filter(person => person.id !== id)
+    Person.findOneAndDelete({"id":req.params.id})
+    .catch(error => {
+        console.log(`Error: ${error}`)
+    })
 
     resp.status(204).end()
 })
