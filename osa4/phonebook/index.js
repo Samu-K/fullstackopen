@@ -1,3 +1,17 @@
+const app = require("./app")
+const http = require("http")
+const config = require("./utils/config")
+const logger = require("./utils/logger")
+
+const server = http.createServer(app)
+
+server.listenerCount(config.PORT, () => {
+    logger.info(`Server running on port ${config.PORT}`)
+})
+
+
+/*
+old file
 require("dotenv").config()
 
 const express = require("express")
@@ -99,6 +113,13 @@ function isDuplicate(Person,pname) {
     return false
 }
 
+personsRouter.get("/info",(req,resp) => {
+    const date = new Date()
+    Person.count({},(err,pplnum)=> {
+        resp.send(`<p>Phonebook has info for ${pplnum}</p> <p>${date}</p>`)
+    })
+})
+
 function addPerson(Person, rbody, resp, next) {
     Person
         .findOne({})
@@ -124,3 +145,4 @@ const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
+*/
