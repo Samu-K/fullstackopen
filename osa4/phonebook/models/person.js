@@ -1,21 +1,23 @@
 const mongoose = require("mongoose")
 
-const url = process.env.MONGODB_URL 
-
-mongoose.connect(url)
-    .then(console.log("Connected to db"))
-    .catch((error) => {
-        console.log("Erro connecting to db: ",error.message)
-    })
-
 const personSchema = new mongoose.Schema({
-    name: String,
-    number: String,
+    name: {
+        type: String,
+        required: true,
+        minlength: 3,
+    },
+    number: {
+        type: String,
+        required: true,
+        minlength: 7
+    },
     id: Number,
 })
 
 personSchema.set("toJSON", {
     transform: (document, returnedObject) => {
+        returnedObject.id = returnedObject._id.toString()
+        delete returnedObject._id
         delete returnedObject.__v
     }
 })

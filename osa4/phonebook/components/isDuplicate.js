@@ -8,4 +8,4 @@ function isDuplicate(Person,pname) {
     return false
 }
 
-export default isDuplicate
+module.export = isDuplicate

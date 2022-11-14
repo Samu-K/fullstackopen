@@ -1,3 +1,6 @@
+const addPerson = require("../components/addPerson")
+const isDuplicate = require("../components/isDuplicate")
+
 const personsRouter = require("express").Router()
 const Person = require("../models/note")
 
